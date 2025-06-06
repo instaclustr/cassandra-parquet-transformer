@@ -1,0 +1,94 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# This file was heavily inspired by config.yaml from Apache Cassandra Sidecar project
+
+version: 2.1
+
+commands:
+  install_common:
+    steps:
+      - run: sudo apt-get update
+        # Somehow, the certs already installed in the java 11 image are installed strangely
+        # in that there's a directory called `cacerts` with a symlink in it named `cacerts`
+        # (/etc/ssl/certs/java/cacerts/cacerts) rather than just a symlink to
+        # `cacerts` in the /etc/ssl/certs/java directory - if this is the case, fix it by
+        # moving it down a directory and then ant should install cleanly
+      - run: |
+          if [ -f /etc/ssl/certs/java/cacerts/cacerts ]; then
+              sudo mv /etc/ssl/certs/java/cacerts/ /etc/ssl/certs/java/cacerts-old
+              sudo mv /etc/ssl/certs/java/cacerts-old/cacerts /etc/ssl/certs/java/
+              sudo rmdir /etc/ssl/certs/java/cacerts-old
+          fi
+        # The image already has java installed, but `apt-get install ant` re-installs it.
+        # Therefore, we download just the deb package for ant and install it with dpkg.
+      - run: |
+          apt-get download ant ant-optional
+          sudo dpkg --force-all -i ant*.deb
+          rm ant*.deb
+      # We need aliases for localhost2,localhost3, ..., localhost20 in hosts
+      - run: |
+          sudo bash -c 'for i in {2..20}; do echo 127.0.0.${i} localhost${i} >> /etc/hosts; done'
+          cat /etc/hosts
+
+jobs:
+  build-dtest-jdk11:
+    working_directory: ~/sstable-transformer
+    docker:
+      - image: cimg/openjdk:11.0
+    resource_class: large
+    steps:
+      - install_common
+      - checkout
+      - run:
+          name: Build jvm dtest jars with jdk11
+          command: |
+            CASSANDRA_USE_JDK11=true scripts/build-dtest-jars.sh
+      - persist_to_workspace:
+          root: dtest-jars
+          paths:
+            - "*.jar"
+  # Runs java 11 tests on a docker image
+  unit_java11:
+    working_directory: ~/sstable-transformer
+    docker:
+      - image: cimg/openjdk:11.0
+    resource_class: large
+    steps:
+      - setup_remote_docker
+      - install_common
+      - checkout
+      - attach_workspace:
+          at: dtest-jars
+      - run: ./mvnw clean install -Pdefault
+
+      - store_artifacts:
+          path: ~/sstable-transformer/target/sstable-transformer-1.0.0-SNAPSHOT-bundled.jar
+          destination: sstable-transformer-bundled.jar
+
+      - store_test_results:
+          path: target/surefire-reports
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build-dtest-jdk11
+      - unit_java11:
+          requires:
+            - build-dtest-jdk11

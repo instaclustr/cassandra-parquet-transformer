@@ -1,0 +1,12 @@
+.DS_Store
+src/.DS_Store
+*.iml
+target
+.idea
+dependency-reduced-pom.xml
+/cassandra.logdir_IS_UNDEFINED/
+src/test/.DS_Store
+input2/
+output/
+build/
+dtest-jars/
