@@ -10,7 +10,7 @@ The source code compiles to Java 11.
 This will create "bundled" JAR artifact with all dependencies.
 
 ----
-./mvnw clean install
+./mvnw clean install -DskipTests
 ----
 
 This will leave out all dependencies which are already in Spark so we do not need to bundle them.
@@ -27,6 +27,16 @@ This will build RPM and Debian packages for bundled artifact.
 
 When packages are installed, there will be `/usr/local/bin/sstable-transformer` script which
 invokes the tool.
+
+If you want to also run tests, you do:
+
+----
+./scripts/build-dtest-jars.sh
+# then, for 5.0
+./mvnw clean test -Dtransformer.cassandra.version=5.0
+# or for 4.1
+./mvnw clean test -Dtransformer.cassandra.version=4.1
+----
 
 === Usage
 

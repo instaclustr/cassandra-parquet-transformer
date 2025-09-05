@@ -247,12 +247,12 @@
                 <dependency>
                     <groupId>org.apache.cassandra</groupId>
                     <artifactId>cassandra-analytics-sidecar-client</artifactId>
-                    <version>0.1.0</version>
+                    <version>0.2-SNAPSHOT</version>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.cassandra</groupId>
                     <artifactId>cassandra-analytics-core_spark3_2.12</artifactId>
-                    <version>0.1.0</version>
+                    <version>0.2-SNAPSHOT</version>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.cassandra</groupId>
@@ -329,7 +329,7 @@
                 <dependency>
                     <groupId>org.apache.cassandra</groupId>
                     <artifactId>cassandra-analytics-integration-framework_spark3_2.12</artifactId>
-                    <version>0.1.0</version>
+                    <version>0.2-SNAPSHOT</version>
                     <scope>test</scope>
                 </dependency>
 
@@ -361,7 +361,7 @@
                 <dependency>
                     <groupId>org.apache.cassandra</groupId>
                     <artifactId>cassandra-analytics-core_spark3_2.12</artifactId>
-                    <version>0.1.0</version>
+                    <version>0.2-SNAPSHOT</version>
                     <scope>provided</scope>
                     <exclusions>
                         <exclusion>
@@ -443,7 +443,7 @@
                 <dependency>
                     <groupId>org.apache.cassandra</groupId>
                     <artifactId>cassandra-analytics-integration-framework_spark3_2.12</artifactId>
-                    <version>0.1.0</version>
+                    <version>0.2-SNAPSHOT</version>
                     <scope>test</scope>
                 </dependency>
 
