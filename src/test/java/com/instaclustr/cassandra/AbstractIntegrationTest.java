@@ -48,7 +48,11 @@ public class AbstractIntegrationTest extends SharedClusterIntegrationTestBase
 {
     static
     {
-        System.setProperty("cassandra.sidecar.versions_to_test", "4.1");
+        if (System.getProperty("transformer.cassandra.version").equals("4.1"))
+            System.setProperty("cassandra.sidecar.versions_to_test", "4.1");
+        else
+            System.setProperty("cassandra.sidecar.versions_to_test", "5.0");
+
         System.setProperty("cassandra.test.dtest_jar_path", "dtest-jars");
         System.setProperty("cassandra.integration.sidecar.test.enable_mtls", "false");
         System.setProperty("SKIP_STARTUP_VALIDATIONS", "true");
@@ -127,9 +131,15 @@ public class AbstractIntegrationTest extends SharedClusterIntegrationTestBase
                 }
 
                 @Override
-                public int retries()
+                public int maxRetries()
                 {
                     return 0;
+                }
+
+                @Override
+                public MillisecondBoundConfiguration retryDelay()
+                {
+                    return new MillisecondBoundConfiguration("1m");
                 }
 
                 @Override

@@ -64,7 +64,7 @@ jobs:
           paths:
             - "*.jar"
   # Runs java 11 tests on a docker image
-  unit_java11:
+  unit_java11-5-0:
     working_directory: ~/sstable-transformer
     docker:
       - image: cimg/openjdk:11.0
@@ -75,20 +75,109 @@ jobs:
       - checkout
       - attach_workspace:
           at: dtest-jars
-      - run: ./mvnw clean install -Pdefault
+      - run: ./mvnw clean test -Pdefault -Dtransformer.cassandra.version=5.0
+      - store_test_results:
+          path: target/surefire-reports-5.0
+
+  spark_unit_java11-5-0:
+    working_directory: ~/sstable-transformer
+    docker:
+      - image: cimg/openjdk:11.0
+    resource_class: large
+    steps:
+      - setup_remote_docker
+      - install_common
+      - checkout
+      - attach_workspace:
+          at: dtest-jars
+      - run: ./mvnw clean test -Pspark -Dtransformer.cassandra.version=5.0
+      - store_test_results:
+          path: target/surefire-reports-5.0
+
+  unit_java11-4-1:
+    working_directory: ~/sstable-transformer
+    docker:
+      - image: cimg/openjdk:11.0
+    resource_class: large
+    steps:
+      - setup_remote_docker
+      - install_common
+      - checkout
+      - attach_workspace:
+          at: dtest-jars
+      - run: ./mvnw clean test -Pdefault -Dtransformer.cassandra.version=4.1
+      - store_test_results:
+          path: target/surefire-reports-4.1
+
+  spark_unit_java11-4-1:
+    working_directory: ~/sstable-transformer
+    docker:
+      - image: cimg/openjdk:11.0
+    resource_class: large
+    steps:
+      - setup_remote_docker
+      - install_common
+      - checkout
+      - attach_workspace:
+          at: dtest-jars
+      - run: ./mvnw clean test -Pspark -Dtransformer.cassandra.version=4.1
+      - store_test_results:
+          path: target/surefire-reports-4.1
+
+  build-jar:
+    working_directory: ~/sstable-transformer
+    docker:
+      - image: cimg/openjdk:11.0
+    resource_class: large
+    steps:
+      - setup_remote_docker
+      - install_common
+      - checkout
+      - attach_workspace:
+          at: dtest-jars
+      - run: ./mvnw clean install -Pdefault -DskipTests=true
 
       - store_artifacts:
-          path: ~/sstable-transformer/target/sstable-transformer-1.0.0-SNAPSHOT-bundled.jar
+          path: ~/sstable-transformer/target/sstable-transformer-1.1.0-SNAPSHOT-bundled.jar
           destination: sstable-transformer-bundled.jar
 
-      - store_test_results:
-          path: target/surefire-reports
+  spark_build-jar:
+    working_directory: ~/sstable-transformer
+    docker:
+      - image: cimg/openjdk:11.0
+    resource_class: large
+    steps:
+      - setup_remote_docker
+      - install_common
+      - checkout
+      - attach_workspace:
+          at: dtest-jars
+      - run: ./mvnw clean install -Pspark -DskipTests=true
+
+      - store_artifacts:
+          path: ~/sstable-transformer/target/sstable-transformer-1.1.0-SNAPSHOT-spark.jar
+          destination: sstable-transformer-spark.jar
 
 workflows:
   version: 2
   build-and-test:
     jobs:
       - build-dtest-jdk11
-      - unit_java11:
+      - unit_java11-5-0:
+          requires:
+            - build-dtest-jdk11
+      - unit_java11-4-1:
+          requires:
+            - build-dtest-jdk11
+      - build-jar:
+          requires:
+            - build-dtest-jdk11
+      - spark_unit_java11-5-0:
+          requires:
+            - build-dtest-jdk11
+      - spark_unit_java11-4-1:
+          requires:
+            - build-dtest-jdk11
+      - spark_build-jar:
           requires:
             - build-dtest-jdk11

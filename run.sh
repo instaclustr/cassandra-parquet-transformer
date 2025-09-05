@@ -1,10 +1,13 @@
 #!/bin/bash
 
+VERSION=1.1.0-SNAPSHOT
 KEYSPACE="spark_test"
 TABLE="test"
 #CREATE_STATEMENT="CREATE TABLE spark_test.test (id bigint PRIMARY KEY, course blob, marks bigint)"
 CREATE_STATEMENT="CREATE TABLE spark_test.test3 (id int PRIMARY KEY,col1 int,col2 int)"
-INPUT_DIR="$(pwd)/input"
+#INPUT_DIR="$(pwd)/input-four";  CASSANDRA_VERSION=FOURZERO
+# For Cassandra 5 SSTables
+INPUT_DIR="$(pwd)/input-five"; CASSANDRA_VERSION=FIVEZERO
 OUTPUT_DIR="$(pwd)/output"
 COMPRESSION=ZSTD
 
@@ -27,7 +30,8 @@ JVM_OPTIONS="-DSKIP_STARTUP_VALIDATIONS=true -Dfile.encoding=UTF-8 -Djdk.attach.
 
 # USE --strategy=ONE_FILE_PER_SSTABLE when you do not want to compact
 
-java ${JVM_OPTIONS} -jar target/sstable-transformer-1.0.0-bundled.jar transform \
+java ${JVM_OPTIONS} -jar target/sstable-transformer-$VERSION-bundled.jar transform \
+  --cassandra-version="${CASSANDRA_VERSION}" \
   --create-table-statement="${CREATE_STATEMENT}" \
   --compression="${COMPRESSION}" \
   --output="${OUTPUT_DIR}" \

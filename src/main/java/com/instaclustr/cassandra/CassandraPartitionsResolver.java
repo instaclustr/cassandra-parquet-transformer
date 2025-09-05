@@ -1,19 +1,20 @@
 package com.instaclustr.cassandra;
 
 import com.google.common.collect.ImmutableMap;
+
+import o.a.c.sidecar.client.shaded.client.HttpClientConfig;
+import o.a.c.sidecar.client.shaded.client.SidecarClient;
+import o.a.c.sidecar.client.shaded.client.SidecarClientConfig;
+import o.a.c.sidecar.client.shaded.client.SidecarClientConfigImpl;
+import o.a.c.sidecar.client.shaded.client.SidecarInstanceImpl;
+import o.a.c.sidecar.client.shaded.client.SimpleSidecarInstancesProvider;
+import o.a.c.sidecar.client.shaded.client.VertxHttpClient;
+import o.a.c.sidecar.client.shaded.client.VertxRequestExecutor;
+import o.a.c.sidecar.client.shaded.client.retry.ExponentialBackoffRetryPolicy;
+import o.a.c.sidecar.client.shaded.client.retry.RetryPolicy;
 import o.a.c.sidecar.client.shaded.common.response.RingResponse;
 import o.a.c.sidecar.client.shaded.io.vertx.core.Vertx;
 import o.a.c.sidecar.client.shaded.io.vertx.core.VertxOptions;
-import org.apache.cassandra.sidecar.client.HttpClientConfig;
-import org.apache.cassandra.sidecar.client.SidecarClient;
-import org.apache.cassandra.sidecar.client.SidecarClientConfig;
-import org.apache.cassandra.sidecar.client.SidecarClientConfigImpl;
-import org.apache.cassandra.sidecar.client.SidecarInstanceImpl;
-import org.apache.cassandra.sidecar.client.SimpleSidecarInstancesProvider;
-import org.apache.cassandra.sidecar.client.VertxHttpClient;
-import org.apache.cassandra.sidecar.client.VertxRequestExecutor;
-import org.apache.cassandra.sidecar.client.retry.ExponentialBackoffRetryPolicy;
-import org.apache.cassandra.sidecar.client.retry.RetryPolicy;
 import org.apache.cassandra.spark.data.ReplicationFactor;
 import org.apache.cassandra.spark.data.partitioner.CassandraInstance;
 import org.apache.cassandra.spark.data.partitioner.CassandraRing;

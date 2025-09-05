@@ -270,7 +270,9 @@ public class TransformerOptions implements Serializable
     }
 
     // for now only this version is supported
-    public CassandraVersion cassandraVersion = CassandraVersion.FOURZERO;
+    @Option(names = "--cassandra-version",
+            description = "FIVEZERO or FOURZERO, defaults to FIVEZERO")
+    public CassandraVersion cassandraVersion = CassandraVersion.FIVEZERO;
     // for now only this partitioner is supported
     public Partitioner partitioner = Partitioner.Murmur3Partitioner;
 
