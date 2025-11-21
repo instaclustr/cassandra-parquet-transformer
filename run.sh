@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=1.1.0-SNAPSHOT
+VERSION=1.1.0
 KEYSPACE="spark_test"
 TABLE="test"
 #CREATE_STATEMENT="CREATE TABLE spark_test.test (id bigint PRIMARY KEY, course blob, marks bigint)"
